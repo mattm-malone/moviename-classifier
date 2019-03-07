@@ -1,0 +1,5 @@
+\copy (SELECT movie.name, string_agg(genre.genre, ' ') as genres FROM movie, genre WHERE movie.id = genre.mid AND genre.genre != 'Short' GROUP BY movie.id ORDER BY genres) To 'C:\Users\Matt\Movie Text Clasifier\data\movies.csv' With CSV
+
+SELECT string_agg(genre.genre, ' ') as genres FROM movie, genre WHERE movie.id=genre.mid AND genre.genre != 'Short' GROUP BY movie.id ORDER BY string_agg(genre.genre, ' ');
+
+\copy (select distinct movie.name, min(genre.genre) from movie, genre where movie.id=genre.mid and genre.genre != 'Short' group by movie.name) To 'C:\Users\Matt\Movie Text Clasifier\data\moviesSingle.csv' With CSV
