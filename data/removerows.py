@@ -1,5 +1,7 @@
 import csv
 import sys
+import enchant
+d = enchant.Dict("en_US")
 
 # Removes from IMDB database:
 # -Movies with no genre
@@ -15,15 +17,27 @@ with open(filename, "rt", encoding='ISO-8859-1') as t:
       for row in data:
         #print(row[0])
         canWrite = True
+        strRow = str(row[2])
+        notEng = 0
+        for word in strRow.split():
+          if not word:
+            pass
+          elif d.check(word) is False:
+              notEng = notEng + 1
+              break
+        if notEng > 1:
+          canWrite = False
         try:
           if row[8] == '\\N':
             canWrite = False
+            #print("nogenre")
         except:
           pass
-        if str(row[1]) != 'movie':
+        if str(row[1]) not in ['movie, tvMovie']:
           canWrite = False
         if row[4] == 1:
           canWrite = False
+          #print("adult")
         if canWrite == True:
-          print(row[0])
+          #print(row[0])
           writer.writerow([row[2], row[8]])
