@@ -1,6 +1,7 @@
 import csv
 import sys
 import enchant
+import re
 d = enchant.Dict("en_US")
 
 # Removes from IMDB database:
@@ -11,21 +12,21 @@ d = enchant.Dict("en_US")
 filename = sys.argv[1]
 
 with open(filename, "rt", encoding='ISO-8859-1') as t:
-  data = csv.reader(t, delimiter='\t')
-  with open("new.tsv", "wt") as f:
+  data = csv.reader(t, delimiter='\t',)
+  with open("new.tsv", "wt", encoding='ISO-8859-1') as f:
       writer = csv.writer(f, delimiter='\t')
       for row in data:
-        #print(row[0])
         canWrite = True
         strRow = str(row[2])
         notEng = 0
-        for word in strRow.split():
+        words = re.sub(r'\W+\'', " ", strRow)
+        for word in words.split():
           if not word:
             pass
           elif d.check(word) is False:
-              notEng = notEng + 1
-              break
-        if notEng > 1:
+            #print(words)
+            notEng = notEng + 1
+        if notEng > 2:
           canWrite = False
         try:
           if row[8] == '\\N':
@@ -33,11 +34,10 @@ with open(filename, "rt", encoding='ISO-8859-1') as t:
             #print("nogenre")
         except:
           pass
-        if str(row[1]) not in ['movie, tvMovie']:
+        if str(row[1]) not in ['movie', 'tvMovie']:
           canWrite = False
         if row[4] == 1:
           canWrite = False
-          #print("adult")
         if canWrite == True:
           #print(row[0])
           writer.writerow([row[2], row[8]])
